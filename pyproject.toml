@@ -3,7 +3,7 @@ name = "chatpy"
 version = "0.1.0"
 description = "A Python package for interacting with Open AI's Chat GPT."
 readme = "README.md"
-requires-python = ">3.11"
+requires-python = ">=3.11"
 authors = [
     { name = "ajrlewis", email = "hello@ajrlewis.com" }
 ]
