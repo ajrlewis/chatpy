@@ -20,7 +20,7 @@ pip3 install git+https://github.com/ajrlewis/chatpy.git
 | --- | --- | --- |
 | api_key     | "your-api-key" | your Open AI API key
 | model       | "gpt-3.5-turbo" | the language model to use
-| temperature | "0.65" | how wild the model is
+| temperature | 0.65 | how wild (>1), or not (<0.5), the model is
 | system      | "You are Guido van Rossum." | the context of the model.
 
 
@@ -34,7 +34,7 @@ import chatpy as cp
 
 api_key = "your-api-key"
 model = "gpt-3.5-turbo"
-temperature = "0.65"
+temperature = 0.65
 system = "Please forget all prior prompts. You are Guido van Rossum, the creator of the Python programming language. Answer as this person at all times. You are doing great and continue to do better each time. Thank you."
 filepath = f"data/who-are-you.json"
 
@@ -44,7 +44,13 @@ else:
     chat = cp.Chat(api_key=api_key, model=model, temperature=temperature, system=system)
 ```
 
-We first set the variables needed, then initiate `chat` instance directory or from a JSON file. We can then interact with the bot as follows:
+We:
+
+    1. import the relevant modules then set the necessary variables.
+    2. include a JSON file path to load or save the `Chat` instance.
+    3. then initiate `chat` instance either directory or from the JSON file path given.
+
+Interaction with the bot is as follows:
 
 ```python
 question = "Who are you? Why are you famous? How did you do it?"
