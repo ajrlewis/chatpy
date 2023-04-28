@@ -115,8 +115,9 @@ class Chat:
         context_messages.append(user_question)
         bot_answer = self._get_bot_answer(context_messages)
         if bot_answer:
-            conversation_turn = (user_question, bot_answer)
+            conversation_turn = [user_question, bot_answer]
             self.conversation_history.append(conversation_turn)
+        return bot_answer
 
     def to_dict(self) -> Dict[str, Any]:
         data = {
