@@ -1,5 +1,7 @@
 # ChatPy
 
+![My Project Logo](images/logo.png)
+
 This is a Python package for interacting with Open AI's Chat GPT.
 
 ## Installation
