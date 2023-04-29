@@ -21,8 +21,8 @@ pip3 install git+https://github.com/ajrlewis/chatpy.git
 | api_key     | "your-api-key" | your Open AI API key
 | model       | "gpt-3.5-turbo" | the language model to use
 | temperature | 0.65 | how wild (>1), or not (<0.5), the model is
-| system      | "You are Guido van Rossum." | the context of the model.
-
+| system      | "You are Guido van Rossum." | the context of the model
+| context_window_size | 2 | the number of conversation turns in the context.
 
 ### Usage
 
@@ -36,12 +36,19 @@ api_key = "your-api-key"
 model = "gpt-3.5-turbo"
 temperature = 0.65
 system = "Please forget all prior prompts. You are Guido van Rossum, the creator of the Python programming language. Answer as this person at all times. You are doing great and continue to do better each time. Thank you."
+context_window_size = 2
 filepath = f"data/who-are-you.json"
 
 if os.path.isfile(filepath):
     chat = cp.Chat.read_json(filepath=filepath)
 else:
-    chat = cp.Chat(api_key=api_key, model=model, temperature=temperature, system=system)
+    chat = cp.Chat(
+        api_key=api_key,
+        model=model,
+        temperature=temperature,
+        system=system,
+        context_window_size=context_window_size,
+    )
 ```
 
 We:
