@@ -15,6 +15,7 @@ def create_message(role: str, content: str) -> Message:
     return {"role": role, "content": content.strip()}
 
 
+# TODO (ajrl): Should add context_widow_size attribute
 class Chat:
     """A class to interact with Open AI's Chat GPT model.
 
@@ -24,6 +25,7 @@ class Chat:
         temperature: The temperature of the model.
         system: The context system of the chat.
         conversation_history: This conversation history.
+        context_window_size: The window size to use, i.e. number of conversation turns.
     References:
         https://platform.openai.com/docs/guides/chat/introduction
         https://github.com/openai/openai-cookbook/blob/main/techniques_to_improve_reliability.md
@@ -36,6 +38,7 @@ class Chat:
         temperature: float,
         system: str = "",
         conversation_history: ConversationHistory = [],
+        context_window_size: int = 2,
     ):
         self.api_key = str(api_key)
         self.model = str(model)
@@ -43,18 +46,31 @@ class Chat:
         self._system_message = {}
         self.system = system
         self.conversation_history = conversation_history
+        self.context_window_size = context_window_size
 
     def __str__(self):
+        white_color = "\033[0m"
+        green_color = "\033[92m"
+        red_color = "\033[31m"
         user_color = "\033[95m"
         bot_color = "\033[96m"
         system_color = "\033[93m"
         code_color = "\033[92m"
-        white_color = "\033[0m"
         separator = "-" * 80 + "\n"
         messages = []
         system_content = self._system_message["content"]
-        messages.append(f"[{0}] {system_color}system{white_color}: {system_content}")
+        messages.append(
+            f"{green_color}[{0}]{white_color} {system_color}system{white_color}: {system_content}"
+        )
+        number_of_conversation_turns = len(self.conversation_history)
         for index, conversation_turn in enumerate(self.conversation_history):
+            i = index + 1
+            user_active_color = red_color
+            bot_active_color = red_color
+            if i >= number_of_conversation_turns - self.context_window_size:
+                user_active_color = green_color
+                if i != number_of_conversation_turns:
+                    bot_active_color = green_color
             user_content = conversation_turn[0]["content"]
             bot_content = conversation_turn[1]["content"]
             for language in ("python", "bash", "html", "css", "js"):
@@ -63,9 +79,11 @@ class Chat:
                 )
                 bot_content = bot_content.replace("```\n", f"```{white_color}\n")
             messages.append(
-                f"[{index + 1}] {user_color}user{white_color}: {user_content}"
+                f"{user_active_color}[{i}]{white_color} {user_color}user{white_color}: {user_content}"
             )
-            messages.append(f"[{index + 1}] {bot_color}bot{white_color}: {bot_content}")
+            messages.append(
+                f"{bot_active_color}[{i}]{white_color} {bot_color}bot{white_color}: {bot_content}"
+            )
         return separator + "\n".join(messages) + "\n" + separator.strip()
 
     @property
@@ -88,10 +106,9 @@ class Chat:
             self.conversation_history = []  # reset the context
             self._system_message = create_message(role="system", content=self.system)
 
-    # TODO (ajrl): Need to flatten conversation history.
-    def _get_context_messages(self, window_size: int) -> Messages:
+    def _get_context_messages(self) -> Messages:
         messages = [self._system_message] + list(
-            sum(self.conversation_history[-window_size:], [])
+            sum(self.conversation_history[-self.context_window_size :], [])
         )
         return messages
 
@@ -109,8 +126,8 @@ class Chat:
         else:
             return create_message(role="assistant", content=bot_answer)
 
-    def ask(self, question: str, window_size: int = 2):
-        context_messages = self._get_context_messages(window_size=window_size)
+    def ask(self, question: str):
+        context_messages = self._get_context_messages()
         user_question = create_message(role="user", content=question)
         context_messages.append(user_question)
         bot_answer = self._get_bot_answer(context_messages)
@@ -126,6 +143,7 @@ class Chat:
             "temperature": self.temperature,
             "system": self.system,
             "conversation_history": self.conversation_history,
+            "context_window_size": self.context_window_size,
         }
         return data
 
@@ -137,6 +155,7 @@ class Chat:
             temperature=data["temperature"],
             system=data["system"],
             conversation_history=data["conversation_history"],
+            context_window_size=data["context_window_size"],
         )
         return chat
 
