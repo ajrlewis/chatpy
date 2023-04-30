@@ -15,7 +15,6 @@ def create_message(role: str, content: str) -> Message:
     return {"role": role, "content": content.strip()}
 
 
-# TODO (ajrl): Should add context_widow_size attribute
 class Chat:
     """A class to interact with Open AI's Chat GPT model.
 
