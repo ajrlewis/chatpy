@@ -1,7 +1,8 @@
 from __future__ import annotations
 import json
-import sys
+import os
 import re
+import sys
 from typing import Any, Dict, List, Optional, Tuple
 import openai
 
@@ -126,6 +127,7 @@ class Chat:
             return create_message(role="assistant", content=bot_answer)
 
     def ask(self, question: str):
+        # Before we ask, get the context messages
         context_messages = self._get_context_messages()
         user_question = create_message(role="user", content=question)
         context_messages.append(user_question)
@@ -134,6 +136,8 @@ class Chat:
             conversation_turn = [user_question, bot_answer]
             self.conversation_history.append(conversation_turn)
         return bot_answer
+
+    # I/O territory:
 
     def to_dict(self) -> Dict[str, Any]:
         data = {
@@ -177,4 +181,12 @@ class Chat:
         with open(filepath) as f:
             data = json.load(f)
         chat = Chat.from_json(data)
+        return chat
+
+    @classmethod
+    def from_filepath(cls, filepath: str, *args, **kwargs):
+        if os.path.isfile(filepath):
+            chat = Chat.read_json(filepath=filepath)
+        else:
+            chat = Chat(*args, **kwargs)
         return chat
