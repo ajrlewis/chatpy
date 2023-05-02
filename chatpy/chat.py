@@ -1,4 +1,3 @@
-from __future__ import annotations
 import json
 import os
 import re
@@ -48,6 +47,7 @@ class Chat:
         self.conversation_history = conversation_history
         self.context_window_size = context_window_size
 
+    # TODO (ajrl) make this a print() method, __str__ should have colours.
     def __str__(self):
         white_color = "\033[0m"
         green_color = "\033[92m"
@@ -103,7 +103,7 @@ class Chat:
     def system(self, system: str):
         self._system = system
         if system:
-            self.conversation_history = []  # reset the context
+            self.conversation_history = []  # reset!
             self._system_message = create_message(role="system", content=self.system)
 
     def _get_context_messages(self) -> Messages:
@@ -122,7 +122,7 @@ class Chat:
             )
             bot_answer = response.choices[0].message.content
         except Exception as e:
-            return create_message(role="assistant", content=f"{e}")
+            raise e
         else:
             return create_message(role="assistant", content=bot_answer)
 
@@ -137,7 +137,7 @@ class Chat:
             self.conversation_history.append(conversation_turn)
         return bot_answer
 
-    # I/O territory:
+    # TODO (ajrl) This is I/O territory.
 
     def to_dict(self) -> Dict[str, Any]:
         data = {
@@ -151,15 +151,8 @@ class Chat:
         return data
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> Chat:
-        chat = Chat(
-            api_key=data["api_key"],
-            model=data["model"],
-            temperature=data["temperature"],
-            system=data["system"],
-            conversation_history=data["conversation_history"],
-            context_window_size=data["context_window_size"],
-        )
+    def from_dict(cls, data: Dict[str, Any]) -> cls:
+        chat = cls(**data)
         return chat
 
     def to_json(self, filepath: Optional[str] = None) -> Optional[str]:
@@ -172,21 +165,21 @@ class Chat:
             return data
 
     @classmethod
-    def from_json(cls, data: str) -> Chat:
-        chat = Chat.from_dict(json.loads(data))
+    def from_json(cls, data: str) -> cls:
+        chat = cls.from_dict(json.loads(data))
         return chat
 
     @classmethod
-    def read_json(cls, filepath: str) -> Chat:
+    def read_json(cls, filepath: str) -> cls:
         with open(filepath) as f:
             data = json.load(f)
-        chat = Chat.from_json(data)
+        chat = cls.from_json(data)
         return chat
 
     @classmethod
-    def from_filepath(cls, filepath: str, *args, **kwargs):
+    def from_filepath(cls, filepath: str, *args, **kwargs) -> cls:
         if os.path.isfile(filepath):
-            chat = Chat.read_json(filepath=filepath)
+            chat = cls.read_json(filepath=filepath)
         else:
-            chat = Chat(*args, **kwargs)
+            chat = cls(*args, **kwargs)
         return chat
