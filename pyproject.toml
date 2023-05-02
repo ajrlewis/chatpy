@@ -23,3 +23,6 @@ dependencies = [
     "urllib3==1.26.15",
     "yarl==1.9.2",
 ]
+
+[tool.setuptools]
+py-modules = []
