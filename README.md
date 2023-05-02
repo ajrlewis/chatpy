@@ -99,13 +99,6 @@ The above should print the following to the terminal:
 
 Wow!
 
-## Systems
-
-A collection of "level 2" sub classes of `Chat` with super-prompt systems declarations for specific needs.
-
-### Website Chat
-
-
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
