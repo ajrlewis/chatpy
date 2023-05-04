@@ -1,3 +1,4 @@
+from __future__ import annotations
 import json
 import os
 import re
@@ -151,7 +152,7 @@ class Chat:
         return data
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> cls:
+    def from_dict(cls, data: Dict[str, Any]) -> Chat:
         chat = cls(**data)
         return chat
 
