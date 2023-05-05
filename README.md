@@ -2,14 +2,14 @@
 
 ![My Project Logo](images/logo.png)
 
-This is a Python package for interacting with Open AI's Chat GPT.
+This is a Python package for interacting with Open AI's Chat GPT models, currently.
 
 ## Installation
 
 To use this extension, you can install it via pip:
 
 ```bash
-pip3 install git+https://github.com/ajrlewis/chatpy.git
+pip install git+https://github.com/ajrlewis/chatpy.git
 ```
 
 ## Chat
@@ -29,33 +29,27 @@ pip3 install git+https://github.com/ajrlewis/chatpy.git
 Use the `Chat` class as follows:
 
 ```python
-import os
 import chatpy as cp
 
 api_key = "your-api-key"
 model = "gpt-3.5-turbo"
 temperature = 0.65
-system = "Please forget all prior prompts. You are Guido van Rossum, the creator of the Python programming language. Answer as this person at all times. You are doing great and continue to do better each time. Thank you."
+system = "an AI bot, capable of AI wizardry."
 context_window_size = 2
-filepath = f"data/who-are-you.json"
 
-if os.path.isfile(filepath):
-    chat = cp.Chat.read_json(filepath=filepath)
-else:
-    chat = cp.Chat(
-        api_key=api_key,
-        model=model,
-        temperature=temperature,
-        system=system,
-        context_window_size=context_window_size,
-    )
+chat = cp.Chat(
+    api_key,
+    model,
+    temperature,
+    system,
+    context_window_size=context_window_size,
+)
 ```
 
 We:
 
-    1. import the relevant modules then set the necessary variables.
-    2. include a JSON file path to load or save the `Chat` instance.
-    3. then initiate `chat` instance either directory or from the JSON file path given.
+    I. Import the relevant modules then set the necessary variables.
+    II. Initiate a `chat` instance.
 
 Interaction with the bot is as follows:
 
@@ -69,12 +63,17 @@ answer = chat.ask(question)
 
 print(chat)
 
+filepath = f"data/chat.json"
 chat.to_json(filepath=filepath)
 ```
 
-We save the `chat` instance to a JSON file that can be reloaded at a later date.
+We:
 
-The above should print the following to the terminal:
+    I. Have a Q&A with the bot.
+    II. Print the instance to the terminal
+    III. Save the instance to a JSON file that can be reloaded at a later date.
+
+The above would print something similar to the following:
 
 ```
 --------------------------------------------------------------------------------
@@ -102,5 +101,3 @@ Wow!
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-
