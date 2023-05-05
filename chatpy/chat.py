@@ -24,8 +24,8 @@ class Chat:
         model: The name of the model.
         temperature: The temperature of the model.
         system: The context system of the chat.
-        conversation_history: This conversation history.
         context_window_size: The window size to use, i.e. number of conversation turns.
+        conversation_history: This conversation history.
     References:
         https://platform.openai.com/docs/guides/chat/introduction
         https://github.com/openai/openai-cookbook/blob/main/techniques_to_improve_reliability.md
@@ -36,17 +36,17 @@ class Chat:
         api_key: str,
         model: str,
         temperature: float,
-        system: str = "",
-        conversation_history: ConversationHistory = [],
+        system: str,
         context_window_size: int = 2,
+        conversation_history: ConversationHistory = [],
     ):
         self.api_key = str(api_key)
         self.model = str(model)
         self.temperature = float(temperature)
         self._system_message = {}
-        self.system = system
+        self.system = str(system)
+        self.context_window_size = int(context_window_size)
         self.conversation_history = conversation_history
-        self.context_window_size = context_window_size
 
     # TODO (ajrl) make this a print() method, __str__ should have colours.
     def __str__(self):
@@ -104,7 +104,7 @@ class Chat:
     def system(self, system: str):
         self._system = system
         if system:
-            self.conversation_history = []  # reset!
+            self.conversation_history = []  # reset the conversation history.
             self._system_message = create_message(role="system", content=self.system)
 
     def _get_context_messages(self) -> Messages:
@@ -146,8 +146,8 @@ class Chat:
             "model": self.model,
             "temperature": self.temperature,
             "system": self.system,
-            "conversation_history": self.conversation_history,
             "context_window_size": self.context_window_size,
+            "conversation_history": self.conversation_history,
         }
         return data
 
@@ -158,7 +158,7 @@ class Chat:
 
     def to_json(self, filepath: Optional[str] = None) -> Optional[str]:
         data = self.to_dict()
-        data = json.dumps(data)
+        # data = json.dumps(data)
         if filepath:
             with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
