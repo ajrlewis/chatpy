@@ -158,7 +158,6 @@ class Chat:
 
     def to_json(self, filepath: Optional[str] = None) -> Optional[str]:
         data = self.to_dict()
-        # data = json.dumps(data)
         if filepath:
             with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
@@ -174,7 +173,7 @@ class Chat:
     def read_json(cls, filepath: str) -> cls:
         with open(filepath) as f:
             data = json.load(f)
-        chat = cls.from_json(data)
+        chat = cls.from_dict(data)
         return chat
 
     @classmethod
