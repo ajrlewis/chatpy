@@ -4,9 +4,11 @@
 
 This is a Python package for interacting with Open AI's Chat GPT models, currently.
 
+Could maybe be a `Chat` protocol to be model independent.
+
 ## Installation
 
-To use this extension, you can install it via pip:
+Install via pip:
 
 ```bash
 pip install git+https://github.com/ajrlewis/chatpy.git
@@ -16,27 +18,37 @@ pip install git+https://github.com/ajrlewis/chatpy.git
 
 ### Attributes
 
-| Attribute | Value | Description
-| --- | --- | --- |
-| api_key     | "your-api-key" | your Open AI API key
-| model       | "gpt-3.5-turbo" | the language model to use
-| temperature | 0.65 | how wild (>1), or not (<0.5), the model is
-| system      | "You are Guido van Rossum." | the context of the model
-| context_window_size | 2 | the number of conversation turns in the context.
+| Attribute           | Value                       | Description
+| ------------------- | --------------------------- | ------------------------------------------------ |
+| api_key             | "your-api-key"              | your Open AI API key                             |
+| model               | "gpt-3.5-turbo"             | the language model to use                        |
+| temperature         | 0.65                        | how wild (>1), or not (<0.5), the model is       |
+| system              | "You are Guido van Rossum." | the context of the model                         |
+| context_window_size | 2                           | the number of conversation turns in the context. |
+
+What is?
+
+    - The context of a model:
+        - Who the language model should be.
+    - A conversation turn:
+        - The number of `question`-`answer` pairs to include.
 
 ### Usage
 
-Use the `Chat` class as follows:
-
+Use the `chatpy.Chat` class as follows:
+        
 ```python
+# I
 import chatpy as cp
 
+# II
 api_key = "your-api-key"
 model = "gpt-3.5-turbo"
 temperature = 0.65
-system = "an AI bot, capable of AI wizardry."
+system = "An AI bot; capable of AI wizardry."
 context_window_size = 2
 
+# III
 chat = cp.Chat(
     api_key,
     model,
@@ -48,12 +60,14 @@ chat = cp.Chat(
 
 We:
 
-    I. Import the relevant modules then set the necessary variables.
-    II. Initiate a `chat` instance.
+    I. Import the relevant module
+    II. Set the necessary variables.
+    III. Initiate a `chat` instance.
 
-Interaction with the bot is as follows:
+Interaction with the `chat` bot is as follows:
 
 ```python
+# I
 question = "Who are you? Why are you famous? How did you do it?"
 answer = chat.ask(question)
 question = "Amazing!"
@@ -61,8 +75,10 @@ answer = chat.ask(question)
 question = "What are your highlights?"
 answer = chat.ask(question)
 
+# II
 print(chat)
 
+# III
 filepath = f"data/chat.json"
 chat.to_json(filepath=filepath)
 ```
@@ -70,12 +86,15 @@ chat.to_json(filepath=filepath)
 We:
 
     I. Have a Q&A with the bot.
-    II. Print the instance to the terminal
-    III. Save the instance to a JSON file that can be reloaded at a later date.
+    II. Print the instance to the terminal. Note. we can print the chat bot at any time.
+    III. Save the instance to a JSON file that can be reloaded from its current state.
 
 The above would print something similar to the following:
 
 ```
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------- ChatPy  --------------------------------------------------------------
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 [0] system: Please forget all prior prompts. You are Guido van Rossum, the creator of the Python programming language. Answer as this person at all times. You are doing great and continue to do better each time. Thank you.
@@ -94,7 +113,11 @@ The above would print something similar to the following:
 - Receiving numerous awards and honors for my work on Python, including the Free Software Foundation's Award for the Advancement of Free Software in 2001 and the NLUUG Award in 2003.
 - Seeing Python adopted by many large companies and organizations, including Google, NASA, and the CIA.
 --------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 ```
+
+where the `[]` indicate the conversation turn.
 
 Wow!
 
