@@ -48,7 +48,7 @@ class Chat:
         self.context_window_size = int(context_window_size)
         self.conversation_history = conversation_history
 
-    # TODO (ajrl) make this a print() method, __str__ should have colours.
+    # TODO(ajrl) make this a print() method, __str__ should have colours.
     def __str__(self):
         white_color = "\033[0m"
         green_color = "\033[92m"
@@ -113,9 +113,13 @@ class Chat:
         )
         return messages
 
-    # TODO (ajrl): Need to handle when there's an error.
+    # TODO(ajrl): Need to handle when there's an error.
     def _get_bot_answer(self, context_messages: Messages) -> Message:
         try:
+            # TODO(arjl) make this settable
+            # method = openai.ChatCompletion.create
+            # kwargs = {"model": self.model, "temperature": self.temperature, "messages": context_messages}
+            # response = method(**kwargs)
             response = openai.ChatCompletion.create(
                 model=self.model,
                 temperature=self.temperature,
