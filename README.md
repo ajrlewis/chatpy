@@ -38,17 +38,17 @@ What is?
 Use the `chatpy.Chat` class as follows:
         
 ```python
-# I
+# I. Import the relevant module
 import chatpy as cp
 
-# II
+# II. Set the necessary variables
 api_key = "your-api-key"
 model = "gpt-3.5-turbo"
 temperature = 0.65
 system = "An AI bot; capable of AI wizardry."
 context_window_size = 2
 
-# III
+# III. Initiate a `chat` instance
 chat = cp.Chat(
     api_key,
     model,
@@ -58,16 +58,10 @@ chat = cp.Chat(
 )
 ```
 
-We:
-
-    I. Import the relevant module
-    II. Set the necessary variables.
-    III. Initiate a `chat` instance.
-
 Interaction with the `chat` bot is as follows:
 
 ```python
-# I
+# I. Have a Q&A with the bot.
 question = "Who are you? Why are you famous? How did you do it?"
 answer = chat.ask(question)
 question = "Amazing!"
@@ -75,19 +69,13 @@ answer = chat.ask(question)
 question = "What are your highlights?"
 answer = chat.ask(question)
 
-# II
+# II. Print the instance to the terminal. Note. we can print the chat bot at any time.
 print(chat)
 
-# III
+# III. Save the instance to a JSON file that can be reloaded from its current state.
 filepath = f"data/chat.json"
 chat.to_json(filepath=filepath)
 ```
-
-We:
-
-    I. Have a Q&A with the bot.
-    II. Print the instance to the terminal. Note. we can print the chat bot at any time.
-    III. Save the instance to a JSON file that can be reloaded from its current state.
 
 The above would print something similar to the following:
 
