@@ -3,6 +3,7 @@ import json
 import os
 import re
 import sys
+import time
 from typing import Any, Dict, List, Optional, Tuple
 import openai
 
@@ -85,7 +86,19 @@ class Chat:
             messages.append(
                 f"{bot_active_color}[{i}]{white_color} {bot_color}bot{white_color}: {bot_content}"
             )
-        return separator + "\n".join(messages) + "\n" + separator.strip()
+        x = "--------- ChatPy  --------------------------------------------------------------\n"
+        return (
+            separator
+            + separator
+            + x
+            + separator
+            + separator
+            + "\n".join(messages)
+            + "\n"
+            + separator
+            + separator
+            + separator.strip()
+        )
 
     @property
     def api_key(self) -> str:
@@ -131,7 +144,7 @@ class Chat:
         else:
             return create_message(role="assistant", content=bot_answer)
 
-    def ask(self, question: str):
+    def ask(self, question: str) -> str:
         # Before we ask, get the context messages
         context_messages = self._get_context_messages()
         user_question = create_message(role="user", content=question)
@@ -141,6 +154,14 @@ class Chat:
             conversation_turn = [user_question, bot_answer]
             self.conversation_history.append(conversation_turn)
         return bot_answer
+
+    def ask_many(self, questions: List[str]) -> List[str]:
+        bot_answers = []
+        for question in questions:
+            bot_answer = self.ask(question)
+            bot_answers.append(bot_answer)
+            time.sleep(1)
+        return bot_answers
 
     # TODO (ajrl) This is I/O territory.
 
