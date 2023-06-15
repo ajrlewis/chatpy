@@ -17,6 +17,7 @@ def create_message(role: str, content: str) -> Message:
     return {"role": role, "content": content.strip()}
 
 
+# TODO (ajrl) Should be ChatPy class.
 class Chat:
     """A class to interact with Open AI's Chat GPT model.
 
@@ -49,56 +50,8 @@ class Chat:
         self.context_window_size = int(context_window_size)
         self.conversation_history = conversation_history
 
-    # TODO(ajrl) make this a print() method, __str__ should have colours.
     def __str__(self):
-        white_color = "\033[0m"
-        green_color = "\033[92m"
-        red_color = "\033[31m"
-        user_color = "\033[95m"
-        bot_color = "\033[96m"
-        system_color = "\033[93m"
-        code_color = "\033[92m"
-        separator = "-" * 80 + "\n"
-        messages = []
-        system_content = self._system_message["content"]
-        messages.append(
-            f"{green_color}[{0}]{white_color} {system_color}system{white_color}: {system_content}"
-        )
-        number_of_conversation_turns = len(self.conversation_history)
-        for index, conversation_turn in enumerate(self.conversation_history):
-            i = index + 1
-            user_active_color = red_color
-            bot_active_color = red_color
-            if i >= number_of_conversation_turns - self.context_window_size:
-                user_active_color = green_color
-                if i != number_of_conversation_turns:
-                    bot_active_color = green_color
-            user_content = conversation_turn[0]["content"]
-            bot_content = conversation_turn[1]["content"]
-            for language in ("python", "bash", "html", "css", "js"):
-                bot_content = bot_content.replace(
-                    f"```{language}", f"```{language}{code_color}"
-                )
-                bot_content = bot_content.replace("```\n", f"```{white_color}\n")
-            messages.append(
-                f"{user_active_color}[{i}]{white_color} {user_color}user{white_color}: {user_content}"
-            )
-            messages.append(
-                f"{bot_active_color}[{i}]{white_color} {bot_color}bot{white_color}: {bot_content}"
-            )
-        x = "--------- ChatPy  --------------------------------------------------------------\n"
-        return (
-            separator
-            + separator
-            + x
-            + separator
-            + separator
-            + "\n".join(messages)
-            + "\n"
-            + separator
-            + separator
-            + separator.strip()
-        )
+        return ""
 
     @property
     def api_key(self) -> str:
@@ -163,7 +116,100 @@ class Chat:
             time.sleep(1)
         return bot_answers
 
+    # TODO (ajrl) Is this is second-layer stuff?
+
+    @classmethod
+    def tame_short_term_memory(
+        cls,
+        api_key: str,
+        system: str = "You are OpenAI's GPT natural language learning model.",
+        filepath: Optional[str] = None,
+    ) -> Chat:
+        model = "gpt-3.5-turbo"
+        temperature = 0.65
+        context_window_size = 2
+        chat = cls.from_filepath(
+            filepath,
+            api_key,
+            model,
+            temperature,
+            system,
+            context_window_size=context_window_size,
+        )
+        return chat
+
+    @classmethod
+    def wild_long_term_memory(
+        cls,
+        api_key: str,
+        system: str = "You are OpenAI's GPT natural language learning model.",
+        filepath: Optional[str] = None,
+    ) -> Chat:
+        model = "gpt-3.5-turbo"
+        temperature = 2.65
+        context_window_size = 4
+        chat = cls.from_filepath(
+            filepath,
+            api_key,
+            model,
+            temperature,
+            system,
+            context_window_size=context_window_size,
+        )
+        return chat
+
     # TODO (ajrl) This is I/O territory.
+
+    # TODO (ajrl) Cap line length to 80 columns. Should code colouring be here?
+    def print(self):
+        white_color = "\033[0m"
+        green_color = "\033[92m"
+        red_color = "\033[31m"
+        user_color = "\033[95m"
+        bot_color = "\033[96m"
+        system_color = "\033[93m"
+        code_color = "\033[92m"
+        separator = "-" * 80 + "\n"
+        messages = []
+        system_content = self._system_message["content"]
+        messages.append(
+            f"{green_color}[{0}]{white_color} {system_color}system{white_color}: {system_content}"
+        )
+        number_of_conversation_turns = len(self.conversation_history)
+        for index, conversation_turn in enumerate(self.conversation_history):
+            i = index + 1
+            user_active_color = red_color
+            bot_active_color = red_color
+            if i >= number_of_conversation_turns - self.context_window_size:
+                user_active_color = green_color
+                if i != number_of_conversation_turns:
+                    bot_active_color = green_color
+            user_content = conversation_turn[0]["content"]
+            bot_content = conversation_turn[1]["content"]
+            for language in ("python", "bash", "html", "css", "javascript"):
+                bot_content = bot_content.replace(
+                    f"```{language}", f"```{language}{code_color}"
+                )
+                bot_content = bot_content.replace("```\n", f"```{white_color}\n")
+            messages.append(
+                f"{user_active_color}[{i}]{white_color} {user_color}user{white_color}: {user_content}"
+            )
+            messages.append(
+                f"{bot_active_color}[{i}]{white_color} {bot_color}bot{white_color}: {bot_content}"
+            )
+        title = "--------- ChatPy  --------------------------------------------------------------\n"
+        print(
+            separator
+            + separator
+            + title
+            + separator
+            + separator
+            + "\n".join(messages)
+            + "\n"
+            + separator
+            + separator
+            + separator.strip()
+        )
 
     def to_dict(self) -> Dict[str, Any]:
         data = {
