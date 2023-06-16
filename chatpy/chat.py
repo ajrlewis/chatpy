@@ -146,7 +146,7 @@ class Chat:
         filepath: Optional[str] = None,
     ) -> Chat:
         model = "gpt-3.5-turbo"
-        temperature = 2.65
+        temperature = 2.0
         context_window_size = 4
         chat = cls.from_filepath(
             filepath,
