@@ -17,7 +17,8 @@ def create_message(role: str, content: str) -> Message:
     return {"role": role, "content": content.strip()}
 
 
-# TODO (ajrl) Should be ChatPy class.
+# TODO (ajrl) Should filepath be a Chat attribute?
+# TODO (ajrl) Should Chat be a `from typing import Protocol`
 class Chat:
     """A class to interact with Open AI's Chat GPT model.
 
@@ -52,6 +53,16 @@ class Chat:
 
     def __str__(self):
         return ""
+
+    def __iter__(self):
+        number_of_conversation_turns = len(self.conversation_history)
+        for index, conversation_turn in enumerate(self.conversation_history):
+            user_content = conversation_turn[0]["content"]
+            bot_content = conversation_turn[1]["content"]
+            is_in_context = (
+                index >= number_of_conversation_turns - self.context_window_size
+            )
+            yield index + 1, user_content, bot_content, is_in_context
 
     @property
     def api_key(self) -> str:
@@ -125,8 +136,8 @@ class Chat:
         system: str = "You are OpenAI's GPT natural language learning model.",
         filepath: Optional[str] = None,
     ) -> Chat:
-        model = "gpt-3.5-turbo"
-        temperature = 0.65
+        model = "gpt-4"
+        temperature = 0.2
         context_window_size = 2
         chat = cls.from_filepath(
             filepath,
@@ -145,8 +156,8 @@ class Chat:
         system: str = "You are OpenAI's GPT natural language learning model.",
         filepath: Optional[str] = None,
     ) -> Chat:
-        model = "gpt-3.5-turbo"
-        temperature = 2.0
+        model = "gpt-4"
+        temperature = 1.0
         context_window_size = 4
         chat = cls.from_filepath(
             filepath,
@@ -158,7 +169,7 @@ class Chat:
         )
         return chat
 
-    # TODO (ajrl) This is I/O territory.
+    # TODO (ajrl) This is Layer Two I/O territory.
 
     # TODO (ajrl) Cap line length to 80 columns. Should code colouring be here?
     def print(self):
@@ -175,28 +186,31 @@ class Chat:
         messages.append(
             f"{green_color}[{0}]{white_color} {system_color}system{white_color}: {system_content}"
         )
-        number_of_conversation_turns = len(self.conversation_history)
-        for index, conversation_turn in enumerate(self.conversation_history):
-            i = index + 1
-            user_active_color = red_color
-            bot_active_color = red_color
-            if i >= number_of_conversation_turns - self.context_window_size:
-                user_active_color = green_color
-                if i != number_of_conversation_turns:
-                    bot_active_color = green_color
-            user_content = conversation_turn[0]["content"]
-            bot_content = conversation_turn[1]["content"]
+
+        for i, user_content, bot_content, is_in_context in self:
+
+            # Code highlighting
             for language in ("python", "bash", "html", "css", "javascript"):
                 bot_content = bot_content.replace(
                     f"```{language}", f"```{language}{code_color}"
                 )
                 bot_content = bot_content.replace("```\n", f"```{white_color}\n")
-            messages.append(
-                f"{user_active_color}[{i}]{white_color} {user_color}user{white_color}: {user_content}"
+
+            # Is in context colour.
+            if is_in_context:
+                color = green_color
+            else:
+                color = red_color
+
+            message = (
+                f"{color}[{i}]{white_color} {color}user{white_color}: {user_content}"
             )
-            messages.append(
-                f"{bot_active_color}[{i}]{white_color} {bot_color}bot{white_color}: {bot_content}"
+            messages.append(message)
+            message = (
+                f"{color}[{i}]{white_color} {color}bot{white_color}: {bot_content}"
             )
+            messages.append(message)
+
         title = "--------- ChatPy  --------------------------------------------------------------\n"
         print(
             separator
